@@ -1,0 +1,19 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/client",
+  "framework": null,
+  "rewrites": [
+    {
+      "source": "/api/health",
+      "destination": "/api/requests"
+    },
+    {
+      "source": "/api/requests/:path*",
+      "destination": "/api/requests"
+    },
+    {
+      "source": "/studio",
+      "destination": "https://autocraft-studio-campus.thatanat4018.chatgpt.site/studio"
+    }
+  ]
+}

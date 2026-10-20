@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.vercel/
+.openai/
+.env
+.env.*
+*.tar.gz
+.DS_Store
