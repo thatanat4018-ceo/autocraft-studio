@@ -1,3 +1,4 @@
+import {commerceRoute} from './commerce.js';
 const json=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'no-store','x-content-type-options':'nosniff'}});
 const text=(value,max=500)=>String(value||'').trim().slice(0,max);
 const hash=async value=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value)))].map(b=>b.toString(16).padStart(2,'0')).join('');
@@ -32,6 +33,7 @@ async function createRequest(request,env){
 export default {async fetch(request,env,ctx){
  const url=new URL(request.url),path=url.pathname;
  try{
+ const commerce=await commerceRoute(request,env);if(commerce)return commerce;
  if(path==='/api/health')return json({requestsAvailable:!!env.BUCKET,studioConfigured:!!env.STUDIO_OWNER_EMAIL});
  if(path==='/api/requests'&&request.method==='POST')return await createRequest(request,env);
  if(path==='/api/studio/requests'&&request.method==='GET'){
@@ -50,6 +52,7 @@ export default {async fetch(request,env,ctx){
   }
  }
  if(path.startsWith('/api/'))return json({error:'Not found.'},404);
+ if(path==='/admin')return Response.redirect(new URL('/admin.html',request.url),302);
  if(path==='/'||path==='/studio')return new Response(INDEX_HTML,{headers:{'content-type':'text/html; charset=utf-8','cache-control':'no-store'}});
  if(env.ASSETS)return env.ASSETS.fetch(request);
  // Static assets are also served by the Sites asset layer. The entry document is a fallback for browser routes.

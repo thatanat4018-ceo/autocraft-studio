@@ -1,0 +1,4 @@
+export const VARIANTS={keychain:{label:'Wooden keychain',price:79,kind:'keychain',width:6,finish:'Natural wood / dark laser engraving',style:'all'},solid:{label:'Full wood wall art',price:249,kind:'wall',width:30,finish:'Natural wood / dark laser engraving',style:'engraved'},outline:{label:'Black outline wall art',price:199,kind:'wall',width:30,finish:'Black wood / outline cut',style:'outline'}};
+export const variantFor=(kind,finish)=>kind==='keychain'?'keychain':finish==='Black wood / outline cut'?'outline':'solid';
+export const priceFor=(kind,finish)=>VARIANTS[variantFor(kind,finish)].price;
+export const totalFor=(items,delivery)=>{const subtotal=items.reduce((n,i)=>n+VARIANTS[i.variant].price*i.quantity+(i.custom?50:0),0);return {subtotal,shipping:delivery==='shipping'?50:0,total:subtotal+(delivery==='shipping'?50:0)}};

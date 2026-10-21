@@ -1,19 +1,17 @@
 # AutoCraft Studio
 
-Automotive MDF wall art and wooden keychain storefront. 120 model-specific outline previews, search, filters, pagination, custom requests, and private order tracking.
+Automotive MDF storefront: model-specific car/F1/circuit/emblem previews, engraved wooden keychains, full-body wood wall art and black outline wall art. Includes cart, customer accounts, custom reference uploads, private design approval, quotes, delivery/pickup, order history, source-tagged campaign links and owner analytics.
 
-## Local development
+## Run and check
 
-Node.js 22+, `npm ci`, then `npm run dev`. `npm run build` outputs the frontend to `dist/client`.
+Node.js 22+. `npm ci`, `npm run build`. `node scripts/check-commerce.mjs`, `node scripts/check-catalog.mjs`, `node scripts/check-expanded-collection.mjs`, `node scripts/check-requests.mjs`. For a loopback-only test environment: `node scripts/preview-commerce.mjs` (ephemeral in-memory storage, no real orders or payments). `npm run dev` previews the frontend; account/order APIs require the server preview or production.
 
-## Production on Vercel
+## Production
 
-Import this repository. `vercel.json` configures the build and customer API proxy. Customers do not need to log in.
+Frontend: https://autocraft-studio.vercel.app. Vercel config builds `dist/client` and forwards explicitly permitted customer API routes to the original private Sites/R2 backend. Keep that backend live. Owner dashboard: `/admin` redirects to the trusted original Sites origin. Legacy pre-account requests stay in `/studio` and are not automatically linked to an account by an unverified email address.
 
-The customer request API uses the existing AutoCraft Sites backend and private storage. Keep that service online; this deployment does not migrate stored requests or uploads. Owner management remains on the original authenticated `/studio` page. The Vercel proxy forwards only customer request creation, private-token tracking, images, and health checks; owner identity headers and owner mutations are never forwarded. Uploads are limited to 4 MB total for Vercel function limits.
+The original Worker backend must be deployed only with the trusted Sites identity integration and private BUCKET binding. Do not deploy its identity-header check directly on another host. No credentials or customer data belong in Git. GitHub source is uploaded separately from production CLI deployment; automatic Git integration is not enabled.
 
-No payment gateway is connected. Requests await a quote and approval; the owner sends a payment link manually.
+Prices are centralized in `src/pricing.js`: keychain THB 79, black outline wall THB 199, full wood wall THB 249. Backend embeds this table at build time; never trust client price fields. Custom +THB 50 per design; shipping +THB 50 per order; MUIC pickup free by appointment. No payment is charged by this app.
 
-`worker/` retains the original Sites-specific backend for reference. Its trusted Sites identity header must not be used as authentication on another host. Do not deploy that backend directly without replacing owner authentication and configuring private storage.
-
-Product images are digital wood previews. Vector studies require manufacturing review, bridges, kerf, and material testing before laser cutting.
+See [implementation plan](docs/implementation-plan.md) and [API/measurement/operations](docs/api-and-measurement.md). Digital images are previews, not finished-stock photos. Model references and circuit data provenance are stored in catalog metadata. Manufacturing drawings need bridge/kerf/material review and test cutting; previews are not certified machine-ready toolpaths.

@@ -4,16 +4,19 @@
   "framework": null,
   "rewrites": [
     {
-      "source": "/api/health",
-      "destination": "/api/requests"
-    },
-    {
-      "source": "/api/requests/:path*",
+      "source": "/api/:path*",
       "destination": "/api/requests"
     },
     {
       "source": "/studio",
       "destination": "https://autocraft-studio-campus.thatanat4018.chatgpt.site/studio"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/admin",
+      "destination": "https://autocraft-studio-campus.thatanat4018.chatgpt.site/admin",
+      "permanent": false
     }
   ]
 }

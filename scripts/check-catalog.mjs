@@ -13,5 +13,5 @@ for(const family of ['wall','keychain'])for(const m of filteredModels(models,{fa
 for(const m of models.filter(m=>m.photos))for(const family of ['wall','keychain'])for(const src of m.photos[family])await access('public'+src);
 for(const family of ['wall','keychain']){const previews=filteredModels(models,{family});assert.ok(previews.length>=6);assert.ok(previews.every(m=>modelPhotos(m,family).every(p=>p.src.startsWith('/assets/'))));}
 assert.deepEqual(modelPhotos({references:[{images:['https://example.test/neon.jpg']}]},'wall'),[],'Reference metal/neon images must never become product photos');
-assert.ok(filteredModels(models,{scope:'all'}).length>2000);
+assert.ok(filteredModels(models,{scope:'all'}).length>=270);assert.ok(filteredModels(models,{scope:'all'}).every(m=>m.photos?.wall?.length));
 console.log('Catalog: search aliases, regular-car ordering, track search, numbered pages and all photo paths passed.');

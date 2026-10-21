@@ -10,7 +10,7 @@ export function modelPhotos(m,family,style='all'){
 export function sceneBackground(src){return src?.includes('-room-light.svg')?'url(/assets/catalog/outline-room-light.jpg)':src?.includes('-room-dark.svg')?'url(/assets/catalog/outline-room-dark.jpg)':'none'}
 export function finishStyle(finish){return finish==='Black wood / outline cut'?'outline':finish==='Natural wood / outline cut'?'naturalOutline':'engraved'}
 export function filteredModels(models,{query='',brand='all',family='wall',f1Only=false,sort='featured',scope='previews',style='all',type='all'}={}){
- let list=models.filter(m=>(family==='keychain'||!m.badge)&&(scope==='all'||query.trim()||m.photos?.[family]?.length)&&(brand==='all'||m.brand===brand)&&(!f1Only||m.f1||m.track)&&(type==='f1'?m.f1&&!m.track:type==='track'?m.track:true)&&(family!=='wall'||style==='all'||modelPhotos(m,family,style).length)&&matchesModel(m,query));
+ let list=models.filter(m=>!m.customOnly&&(m.photos?.[family]?.length)&&(brand==='all'||m.brand===brand)&&(!f1Only||m.f1||m.track)&&(type==='f1'?m.f1&&!m.track:type==='track'?m.track:type==='logo'?m.badge:true)&&(family!=='wall'||style==='all'||modelPhotos(m,family,style).length)&&matchesModel(m,query));
  if(scope==='previews'&&!query.trim()){const seen=new Set();list=list.filter(m=>{const key=modelPhotos(m,family,style)[0]?.src;if(seen.has(key))return false;seen.add(key);return true})}
  return list.sort((a,b)=>sort==='name'?a.name.localeCompare(b.name):sort==='brand'?a.brand.localeCompare(b.brand)||a.name.localeCompare(b.name):rankModel(a)-rankModel(b)||a.brand.localeCompare(b.brand)||a.name.localeCompare(b.name))
 }

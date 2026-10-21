@@ -1,3 +1,4 @@
+import {priceFor} from './pricing.js';
 import {modelPhotos,finishStyle,sceneBackground} from './catalog/catalog-data.js';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function createProductDetail({onContinue}){
@@ -12,13 +13,13 @@ export function createProductDetail({onContinue}){
   $('#pdThumbs').querySelectorAll('button').forEach(b=>b.onclick=()=>{index=+b.dataset.index;paint()});
   $('#pdSource').innerHTML=model.outlineSource?`Outline reference: <a href="${esc(model.outlineSource.url)}" target="_blank" rel="noopener">Petrol Vibes</a> · adapted as a wood preview.`:'';$('#pdImageCount').textContent=photos.length?`${index+1} / ${photos.length}`:'Custom preview after review';
   $('#pdSize').textContent=kind==='wall'?(+width===30?'30 cm long · height follows your car profile':width+' cm requested · size reviewed with your quote'):(+width===6?'Approx. 6 cm long · silver-colour key ring':width+' cm requested · size reviewed with your quote');
-  $('#pdBasePrice').textContent='From ฿'+(kind==='wall'?199:79);
+  $('#pdBasePrice').textContent='From ฿'+priceFor(kind,$('#pdFinish').value);
   const quantity=Math.max(1,Math.min(100,+$('#pdQuantity').value||1));
-  $('#pdEstimate').textContent='Indicative total ฿'+((kind==='wall'?199:79)*quantity).toLocaleString('en');
+  $('#pdEstimate').textContent='Indicative total ฿'+(priceFor(kind,$('#pdFinish').value)*quantity).toLocaleString('en');
   dialog.querySelectorAll('[data-pd-kind]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.pdKind===kind)));
  }
  dialog.querySelectorAll('[data-pd-kind]').forEach(b=>b.onclick=()=>{kind=b.dataset.pdKind;width=kind==='wall'?30:6;height='';index=0;configureFinish();paint()});
- function configureFinish(){const finish=$('#pdFinish');for(const o of finish.options){o.disabled=kind==='keychain'?o.value!=='Natural wood / dark laser engraving':o.value==='Black wood / outline cut'?!model.photoStyles?.outline?.length:o.value==='Natural wood / outline cut'?!model.photoStyles?.naturalOutline?.length&&!model.lineArt:o.value==='Natural wood / dark laser engraving'?model.lineArt&&!model.photoStyles?.engraved?.length:false}if(!finish.value||finish.selectedOptions[0]?.disabled)finish.value=kind==='wall'&&model.lineArt?'Black wood / outline cut':'Natural wood / dark laser engraving';}
+ function configureFinish(){const finish=$('#pdFinish');finish.options[0].textContent=kind==='keychain'?'Natural MDF keychain · ฿79':'Full wood wall art · ฿249';for(const o of finish.options){o.disabled=kind==='keychain'?o.value!=='Natural wood / dark laser engraving':o.value==='Black wood / outline cut'?!model.photoStyles?.outline?.length:o.value==='Natural wood / outline cut'?!model.photoStyles?.naturalOutline?.length&&!model.lineArt:o.value==='Natural wood / dark laser engraving'?model.lineArt&&!model.photoStyles?.engraved?.length:false}if(!finish.value||finish.selectedOptions[0]?.disabled)finish.value=kind==='wall'&&model.lineArt?'Black wood / outline cut':'Natural wood / dark laser engraving';}
  $('#pdFinish').onchange=()=>{index=0;paint()};
  $('#pdQuantity').oninput=paint;
  $('#pdContinue').onclick=()=>{if(!$('#pdQuantity').reportValidity())return;const order={model,kind,quantity:+$('#pdQuantity').value,width,height,finish:$('#pdFinish').value};dialog.close();onContinue(order)};
