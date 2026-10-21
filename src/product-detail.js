@@ -11,7 +11,8 @@ export function createProductDetail({onContinue}){
   if(photos.length){$('#pdImage').src=photos[index].src;$('#pdZoom').style.backgroundImage=sceneBackground(photos[index].src);$('#pdImage').alt=model.brand+' '+model.name+' wooden '+(kind==='wall'?'wall art':'keychain')+' preview'}
   $('#pdThumbs').innerHTML=photos.map((p,i)=>`<button type="button" data-index="${i}" style="background-image:${p.background}" aria-label="View product image ${i+1}" aria-pressed="${i===index}"><img src="${esc(p.src)}" alt=""></button>`).join('');
   $('#pdThumbs').querySelectorAll('button').forEach(b=>b.onclick=()=>{index=+b.dataset.index;paint()});
-  $('#pdSource').innerHTML=model.outlineSource?`Outline reference: <a href="${esc(model.outlineSource.url)}" target="_blank" rel="noopener">Petrol Vibes</a> · adapted as a wood preview.`:'';$('#pdImageCount').textContent=photos.length?`${index+1} / ${photos.length}`:'Custom preview after review';
+  const generated=kind==='keychain'?model.keychainImageProvenance:finishStyle($('#pdFinish').value)==='engraved'?model.solidImageProvenance:null;
+  $('#pdSource').innerHTML=generated?'AI-generated product visualization · final engraving confirmed before production.':model.outlineSource?`Outline reference: <a href="${esc(model.outlineSource.url)}" target="_blank" rel="noopener">Petrol Vibes</a> · adapted as a wood preview.`:'';$('#pdImageCount').textContent=photos.length?`${index+1} / ${photos.length}`:'Custom preview after review';
   $('#pdSize').textContent=kind==='wall'?(+width===30?'30 cm long · height follows your car profile':width+' cm requested · size reviewed with your quote'):(+width===6?'Approx. 6 cm long · silver-colour key ring':width+' cm requested · size reviewed with your quote');
   $('#pdBasePrice').textContent='From ฿'+priceFor(kind,$('#pdFinish').value);
   const quantity=Math.max(1,Math.min(100,+$('#pdQuantity').value||1));
