@@ -63,3 +63,13 @@ No automated payment gateway, payment webhook, email/LINE messaging, refund auto
 `/custom` is the public custom design page. All new submissions use the account/cart/checkout flow and `POST /api/orders`; adding to a cart alone does not submit a request. Per-line `referenceIndexes` bind uploaded references to each custom design; the server rejects invalid indexes and validates file types and totals. Reference files remain in browser memory until checkout and must be attached again after a refresh.
 
 `GET /api/admin/workspace` requires studio authorization and returns account orders plus earlier `requests/` inquiries, without request tracking-token hashes. The admin page supports order type, stage and search filters, private references, replies, quotes, verified payment and shipping updates. Earlier inquiries retain their original tracking links and reply API; they are labelled separately and excluded from verified revenue. Summary counts are operational totals, separate from consented campaign analytics.
+
+### Per-link and combined campaign reports
+
+The registry at `/campaigns/links.json` contains seven placements: IG bio, post 01, Reels 01/02, Story 01, MUIC booth QR and QR inside an IG post. Each has unique `utm_content`; current PNG/SVG QR assets point to the public Vercel storefront. Existing printed native-site links continue to work against the same backend, but browser identity is separate across domains.
+
+Admin → Campaign performance shows each registered placement even with zero visits, placement-type groups and deduplicated overall totals. A browser visiting multiple placements is counted once overall. Event IDs are deduplicated across response pages. Conversion means distinct sessions with an order submission divided by measured sessions; several orders in one session do not exceed 100%. Later payment confirmations do not create new visits. Operational orders/revenue are separate from consented attribution.
+
+Engagement requires ten active visible-page seconds. Provisional exits use the last observed browser event per session, not payment events; they are not GA4 bounce or confirmed exit counts. The 42-day view compares six-week class targets. Summary CSV, per-link CSV and copyable report text are available. Formula-leading text is escaped in CSV.
+
+Owner-only `POST /api/admin/analytics/test-cleanup` accepts `{campaign,confirm}` where both exactly match `qa_YYYYMMDD_<8 lowercase hex>`. It deletes only events whose last-touch campaign equals that explicitly named QA campaign, writes a cleanup audit, requires same-origin and refuses normal campaign names. It does not delete customer accounts, orders, files or other traffic. Use a separate QA campaign for live tests, then verify no QA events remain.
