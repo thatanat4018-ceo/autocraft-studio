@@ -1,3 +1,4 @@
+import {buildAnalyticsReport,reportCSV} from '../public/analytics-report.js';
 import {hasStudioAccess} from './admin-auth.js';
 // Private storage shared by the public storefront and trusted Sites owner console.
 const CJSON=(v,status=200,headers={})=>Response.json(v,{status,headers:{'cache-control':'no-store','x-content-type-options':'nosniff',...headers}});
@@ -66,6 +67,15 @@ export async function commerceRoute(request,env){
    if(match[2]==='photos'&&request.method==='GET'){const a=o.attachments[+match[3]],file=a&&await env.BUCKET.get(a.key);if(!file)CERR('Image not found.',404);return new Response(file.body,{headers:{'content-type':a.type,'cache-control':'private, no-store','x-content-type-options':'nosniff'}});}
    if(request.method==='GET')return CJSON({order:o});
    if(request.method==='POST'&&['approve','revision'].includes(match[2])){if(!user||o.userId!==user.id)CERR('Customer access required.',403);if(!['design_ready','revision_requested'].includes(o.status))CERR('Wait for the team to post your designs.',409);const b=await CBODY(request);if(match[2]==='approve'){if(!o.designs.some(d=>d.id===b.designId))CERR('Select an available design.');o.selectedDesignId=b.designId;o.status='design_approved';}else{if(!CSTR(b.message,2000))CERR('Describe your requested changes.');o.revision=CSTR(b.message,2000);o.status='revision_requested';}o.updatedAt=new Date().toISOString();o.history.push({at:o.updatedAt,status:o.status,message:match[2]==='approve'?'Customer approved a design.':'Customer requested a revision.'});await CPUT(env,'commerce/orders/'+o.id,o);return CJSON({order:o});}
+  }
+  if(p==='/api/admin/analytics/export'&&request.method==='GET'){
+   if(!admin)CERR('Store owner access required.',403);
+   const days=Math.min(90,Math.max(1,+url.searchParams.get('days')||42)),kind=url.searchParams.get('type');if(!['summary','links'].includes(kind))CERR('Choose summary or links.');
+   const listing=await CLIST(env,'commerce/events/');if(listing.truncated)CERR('Report limit reached. No partial export was created.',409);
+   const since=Date.now()-days*86400000,events=(await Promise.all(listing.objects.map(o=>CGET(env,o.key)))).filter(e=>e&&Date.parse(e.at)>=since),report=buildAnalyticsReport(events,COMMERCE_CAMPAIGNS);
+   let rows,fields;if(kind==='links'){rows=report.channels;fields=['title','source','medium','campaign','content','visitors','sessions','pageViews','engaged','signups','cart','checkouts','orders','paidOrders','revenue','conversionRate'];}
+   else{const operation=await CANALYTICS(env,days);if(operation.truncated)CERR('Operational order limit reached. No partial export was created.',409);const t=report.totals,o=operation.totals;rows=Object.entries({'Period (days)':days,'Measured page views':t.pageViews,'Distinct browsers':t.visitors,'Measured sessions':t.sessions,'Engaged sessions':t.engaged,'Attributed signups':t.signups,'Attributed submitted orders':t.orders,'Sessions with submitted order (%)':t.conversionRate,'All account orders':o.orders,'All verified paid orders':o.paidOrders,'Verified paid units':o.paidUnits,'Verified revenue (THB)':o.paidRevenue,'First response within 24h':o.answeredWithin24h}).map(([metric,value])=>({metric,value}));fields=['metric','value'];}
+   return new Response(reportCSV(rows,fields),{headers:{'content-type':'text/csv; charset=utf-8','content-disposition':`attachment; filename="autocraft-${kind}-${days}-days.csv"`,'cache-control':'private, no-store','x-content-type-options':'nosniff'}});
   }
   if(p==='/api/admin/analytics/test-cleanup'&&request.method==='POST'){
    if(!admin)CERR('Store owner access required.',403);

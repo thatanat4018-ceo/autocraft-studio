@@ -20,3 +20,6 @@ assert.equal((await call('/api/admin/analytics/test-cleanup',{campaign:qa,confir
 const cleaned=await call('/api/admin/analytics/test-cleanup',{campaign:qa,confirm:qa},true);assert.equal(cleaned.body.deleted,1);
 const remaining=(await call('/api/admin/analytics?days=7',null,true)).body.events;assert.equal(remaining.length,1);assert.equal(remaining[0].last.campaign,'campus_launch');
 console.log('Campaign measurement passed: 7 registered URLs, deduplicated global/link totals, zero rows, signup/order/payment separation, real conversion denominator, CSV safety and exact QA-only cleanup with authorization/CSRF.');
+
+for(const kind of ['summary','links']){const url=origin+'/api/admin/analytics/export?days=7&type='+kind;const anonymous=await worker.fetch(new Request(url),env,{});assert.equal(anonymous.status,403);const response=await worker.fetch(new Request(url,{headers:{'oai-authenticated-user-email':env.STUDIO_OWNER_EMAIL}}),env,{});assert.equal(response.status,200);assert.match(response.headers.get('content-disposition'),/attachment/);const csv=await response.text();assert.ok(csv.includes(kind==='summary'?'Measured page views':'Instagram profile bio'));assert.ok(!csv.includes(qa));}
+console.log('Authenticated server CSV exports passed for combined summary and every registered link.');

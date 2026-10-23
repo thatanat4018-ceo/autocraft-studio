@@ -1,0 +1,57 @@
+{
+  "campaign": "qa_20261023_b01777f2",
+  "verifiedAt": "2026-10-23T06:20:28.155Z",
+  "testType": "Seven public Vercel browser landings using a separate QA campaign; published QR images decoded separately.",
+  "placements": [
+    {
+      "code": "ig-bio",
+      "content": "profile_bio",
+      "browserLandingVerified": true
+    },
+    {
+      "code": "ig-post-01",
+      "content": "post_01",
+      "browserLandingVerified": true
+    },
+    {
+      "code": "ig-reel-01",
+      "content": "reel_01",
+      "browserLandingVerified": true
+    },
+    {
+      "code": "ig-story-01",
+      "content": "story_01",
+      "browserLandingVerified": true
+    },
+    {
+      "code": "booth-qr-01",
+      "content": "booth_sign_01",
+      "browserLandingVerified": true
+    },
+    {
+      "code": "ig-post-qr-01",
+      "content": "post_qr_01",
+      "browserLandingVerified": true
+    },
+    {
+      "code": "ig-reel-02",
+      "content": "reel_02",
+      "browserLandingVerified": true
+    }
+  ],
+  "observed": {
+    "browsers": 1,
+    "sessions": 7,
+    "pageViews": 7,
+    "productViews": 1,
+    "addToCart": 1,
+    "signups": 0,
+    "orders": 0,
+    "paidOrders": 0
+  },
+  "cleanup": {
+    "deleted": 11,
+    "remaining": 0,
+    "otherTrafficPreserved": true
+  }
+}
