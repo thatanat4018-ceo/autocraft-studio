@@ -5,3 +5,5 @@
 .card-variant-options{display:flex;gap:8px;margin:12px 0}.model-card .card-variant-options button{flex:1;min-height:44px;padding:8px 6px;border:1px solid #bdb5a9;background:#fff;color:#29251f;font:inherit;font-size:11px;cursor:pointer}.model-card .card-variant-options button[aria-pressed="true"]{background:#24211d;color:#fff;border-color:#24211d}
 @media(max-width:600px){.card-variant-options{flex-direction:column;gap:6px}}
 .model-card .card-variant-options button:disabled{opacity:.4;cursor:not-allowed}
+
+.reference-state{font-size:12px;color:#6e593d;background:#eee7da;padding:10px 12px;line-height:1.6}.reference-state:empty{display:none}.order-received{border-left:4px solid #8b724f;padding:18px;background:#eee7da;margin-bottom:22px}.order-received strong{font-size:13px}.order-received p{font-size:13px;margin:8px 0 0}.cart-footer>p::after{content:' Your cart is not sent until you submit checkout.'}

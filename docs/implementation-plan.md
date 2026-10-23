@@ -8,6 +8,8 @@
 - Digital product previews remain labelled honestly; no neon or metal product photos.
 
 ## Custom journey
+The public `/custom` page is linked prominently from the navigation and homepage. It shows three craft choices, material examples, upload guidance and an itemized estimate before cart. New custom designs and catalog purchases both enter the same account checkout and the unified admin sales workspace. Earlier inquiries appear in that workspace without being silently converted to paid orders.
+
 Upload up to 3 reference images (4 MB total), exact car/generation, preferred product, dimensions, quantity, notes and contact. A saved request gets a 24-hour first-design target, not a guaranteed shipping date. Owner reviews feasibility and posts up to three design options in the order. Customer selects one and approves or requests a revision. Owner posts a final quote and HTTPS payment link after approval. Production follows manually verified payment. No automatic payment collection, charge, or paid conversion on link click. Pickup or shipping status and carrier tracking are shown in the account. A custom item outside standard size requires a quote; its displayed amount is an estimate until approved.
 
 ## Measurement

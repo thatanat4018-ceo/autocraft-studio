@@ -55,10 +55,10 @@ export default {async fetch(request,env,ctx){
  }
  if(path.startsWith('/api/'))return json({error:'Not found.'},404);
  if(path==='/admin')return Response.redirect(new URL('/admin.html',request.url),302);
- if(path==='/'||path==='/studio')return new Response(INDEX_HTML,{headers:{'content-type':'text/html; charset=utf-8','cache-control':'no-store'}});
+ if(path==='/'||path==='/studio'||path==='/custom')return new Response(INDEX_HTML,{headers:{'content-type':'text/html; charset=utf-8','cache-control':'no-store'}});
  if(env.ASSETS)return env.ASSETS.fetch(request);
  // Static assets are also served by the Sites asset layer. The entry document is a fallback for browser routes.
- if(path==='/'||path==='/studio')return new Response(INDEX_HTML,{headers:{'content-type':'text/html; charset=utf-8','cache-control':'no-store'}});
+ if(path==='/'||path==='/studio'||path==='/custom')return new Response(INDEX_HTML,{headers:{'content-type':'text/html; charset=utf-8','cache-control':'no-store'}});
  return new Response('Not found',{status:404});
  }catch(e){console.error('Request handler failed',e);return json({error:e.message==='UPLOAD_TOO_LARGE'?'Images exceed the 15 MB upload limit.':'This service is temporarily unavailable. Your details have not been cleared.'},e.message==='UPLOAD_TOO_LARGE'?413:503)}
 }};

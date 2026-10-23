@@ -57,3 +57,9 @@ No automated payment gateway, payment webhook, email/LINE messaging, refund auto
 - `POST /api/admin/auth/logout`: revokes the current password session and expires its cookie.
 - Runtime configuration: `STUDIO_ADMIN_USERNAME`, secret `STUDIO_ADMIN_PASSWORD_HASH` in `pbkdf2-sha256$100000$<64-hex-salt>$<64-hex-derived-key>` format. Configure through Sites environment tools and deploy; never commit the password or verifier. Preserve `STUDIO_OWNER_EMAIL` for owner fallback.
 - Admin operations remain available on the native Sites host. The Vercel customer bridge does not proxy admin APIs.
+
+### Unified sales workspace and custom studio
+
+`/custom` is the public custom design page. All new submissions use the account/cart/checkout flow and `POST /api/orders`; adding to a cart alone does not submit a request. Per-line `referenceIndexes` bind uploaded references to each custom design; the server rejects invalid indexes and validates file types and totals. Reference files remain in browser memory until checkout and must be attached again after a refresh.
+
+`GET /api/admin/workspace` requires studio authorization and returns account orders plus earlier `requests/` inquiries, without request tracking-token hashes. The admin page supports order type, stage and search filters, private references, replies, quotes, verified payment and shipping updates. Earlier inquiries retain their original tracking links and reply API; they are labelled separately and excluded from verified revenue. Summary counts are operational totals, separate from consented campaign analytics.

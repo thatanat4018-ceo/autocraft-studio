@@ -10,6 +10,10 @@
     {
       "source": "/studio",
       "destination": "https://autocraft-studio-campus.thatanat4018.chatgpt.site/studio"
+    },
+    {
+      "source": "/custom",
+      "destination": "/index.html"
     }
   ],
   "redirects": [
