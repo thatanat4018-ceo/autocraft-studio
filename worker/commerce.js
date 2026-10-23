@@ -1,3 +1,4 @@
+import {hasStudioAccess} from './admin-auth.js';
 // Private storage shared by the public storefront and trusted Sites owner console.
 const CJSON=(v,status=200,headers={})=>Response.json(v,{status,headers:{'cache-control':'no-store','x-content-type-options':'nosniff',...headers}});
 const CSTR=(v,max=160)=>String(v??'').trim().slice(0,max);
@@ -8,7 +9,7 @@ const CRAND=()=>[...crypto.getRandomValues(new Uint8Array(32))].map(v=>v.toStrin
 const CGET=async(env,key)=>{const o=await env.BUCKET.get(key);return o?o.json():null};
 const CPUT=(env,key,v)=>env.BUCKET.put(key,JSON.stringify(v),{httpMetadata:{contentType:'application/json'}});
 const CSAME=r=>r.headers.get('origin')===new URL(r.url).origin;
-const COWNER=(r,env)=>!!env.STUDIO_OWNER_EMAIL&&r.headers.get('oai-authenticated-user-email')?.toLowerCase()===env.STUDIO_OWNER_EMAIL.toLowerCase();
+const COWNER=hasStudioAccess;
 async function CBODY(r,max=100000){const v=await r.text();if(v.length>max)CERR('Request is too large.',413);try{return JSON.parse(v)}catch{CERR('Invalid JSON.')}}
 async function CLIMIT(r,env,type,limit){const identity=r.headers.get('cf-connecting-ip')||'unknown';const key='commerce/limits/'+type+'/'+await CHASH(identity+new Date().toISOString().slice(0,13));const v=await CGET(env,key)||{n:0};if(v.n>=limit)CERR('Too many attempts. Try again in one hour.',429);await CPUT(env,key,{n:v.n+1});}
 async function CPASS(password,salt){const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveBits']);return [...new Uint8Array(await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:new TextEncoder().encode(salt),iterations:100000},key,256))].map(v=>v.toString(16).padStart(2,'0')).join('');}
@@ -43,7 +44,7 @@ export async function commerceRoute(request,env){
  if(!env.BUCKET)return CJSON({error:'Order storage unavailable.'},503);
  try{
   if(!['GET','HEAD'].includes(request.method)&&!CSAME(request))CERR('Please submit from this website.',403);
-  const user=await CUSER(request,env),admin=COWNER(request,env);
+  const user=await CUSER(request,env),admin=await COWNER(request,env);
   if(p==='/api/auth/me'&&request.method==='GET')return CJSON({user:CPUBLIC(user)});
   if(p==='/api/auth/signup'&&request.method==='POST'){
    await CLIMIT(request,env,'auth',50);const b=await CBODY(request),email=CSTR(b.email,180).toLowerCase(),name=CSTR(b.name,100),password=String(b.password||'');if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||!name||password.length<12||password.length>128||b.consent!==true)CERR('Enter name, email, a 12–128 character password and accept account processing.');const emailKey='commerce/emails/'+await CHASH(email);if(await CGET(env,emailKey))CERR('This account already exists. Sign in or use your recovery code.',409);const salt=CRAND(),recovery=CRAND(),id=crypto.randomUUID(),attr=CATTR(b.attribution),u={id,email,name,salt,passwordHash:await CPASS(password,salt),recoveryHash:await CHASH(recovery),createdAt:new Date().toISOString(),sessionVersion:0,attribution:attr};await CPUT(env,'commerce/users/'+id,u);await CPUT(env,emailKey,{id});await CEVENT(env,'sign_up',attr);return CJSON({user:CPUBLIC(u),recoveryCode:recovery},201,{'set-cookie':await CSESSION(env,u)});

@@ -1,12 +1,13 @@
 import {commerceRoute} from './commerce.js';
+import {hasStudioAccess,studioAuthRoute} from './admin-auth.js';
 const json=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'no-store','x-content-type-options':'nosniff'}});
 const text=(value,max=500)=>String(value||'').trim().slice(0,max);
 const hash=async value=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value)))].map(b=>b.toString(16).padStart(2,'0')).join('');
 const validID=id=>/^[a-f0-9-]{36}$/.test(id);
-const owner=(request,env)=>!!env.STUDIO_OWNER_EMAIL&&request.headers.get('oai-authenticated-user-email')?.toLowerCase()===env.STUDIO_OWNER_EMAIL.toLowerCase();
+const owner=hasStudioAccess;
 const sameOrigin=request=>request.headers.get('origin')===new URL(request.url).origin;
 async function readRecord(env,id){if(!validID(id))return null;const object=await env.BUCKET.get('requests/'+id+'.json');return object?object.json():null}
-async function authorized(request,env,record){if(owner(request,env))return true;const token=request.headers.get('authorization')?.replace(/^Bearer /,'')||'';return token.length===48&&await hash(token)===record.tokenHash}
+async function authorized(request,env,record){if(await owner(request,env))return true;const token=request.headers.get('authorization')?.replace(/^Bearer /,'')||'';return token.length===48&&await hash(token)===record.tokenHash}
 async function boundedForm(request){const max=16*1024*1024;if(+request.headers.get('content-length')>max)throw new Error('UPLOAD_TOO_LARGE');const reader=request.body?.getReader();if(!reader)throw new Error('EMPTY_REQUEST');let size=0,chunks=[];while(true){const {value,done}=await reader.read();if(done)break;size+=value.length;if(size>max){await reader.cancel();throw new Error('UPLOAD_TOO_LARGE')}chunks.push(value)}return new Response(new Blob(chunks),{headers:{'content-type':request.headers.get('content-type')||''}}).formData()}
 function typeOf(bytes){if(bytes[0]===255&&bytes[1]===216&&bytes[2]===255)return ['image/jpeg','jpg'];if(bytes.length>=8&&bytes.slice(0,8).every((v,i)=>v===[137,80,78,71,13,10,26,10][i]))return ['image/png','png'];if(bytes.length>=12&&new TextDecoder().decode(bytes.slice(0,4))==='RIFF'&&new TextDecoder().decode(bytes.slice(8,12))==='WEBP')return ['image/webp','webp'];return null}
 async function createRequest(request,env){
@@ -33,11 +34,12 @@ async function createRequest(request,env){
 export default {async fetch(request,env,ctx){
  const url=new URL(request.url),path=url.pathname;
  try{
+ const auth=await studioAuthRoute(request,env);if(auth)return auth;
  const commerce=await commerceRoute(request,env);if(commerce)return commerce;
  if(path==='/api/health')return json({requestsAvailable:!!env.BUCKET,studioConfigured:!!env.STUDIO_OWNER_EMAIL});
  if(path==='/api/requests'&&request.method==='POST')return await createRequest(request,env);
  if(path==='/api/studio/requests'&&request.method==='GET'){
-  if(!owner(request,env))return json({error:'Store owner sign-in required.'},403);if(!env.BUCKET)return json({error:'Storage unavailable.'},503);
+  if(!await owner(request,env))return json({error:'Store owner sign-in required.'},403);if(!env.BUCKET)return json({error:'Storage unavailable.'},503);
   const listing=await env.BUCKET.list({prefix:'requests/',limit:100,cursor:url.searchParams.get('cursor')||undefined});const records=await Promise.all(listing.objects.map(o=>env.BUCKET.get(o.key).then(v=>v?.json())));return json({requests:records.filter(Boolean).map(({tokenHash,...record})=>record).sort((a,b)=>b.createdAt.localeCompare(a.createdAt)),cursor:listing.truncated?listing.cursor:null})
  }
  const match=path.match(/^\/api\/requests\/([a-f0-9-]{36})(?:\/photos\/(\d+))?$/);
@@ -46,7 +48,7 @@ export default {async fetch(request,env,ctx){
   if(match[2]!==undefined&&request.method==='GET'){const f=record.attachments[+match[2]],object=f&&await env.BUCKET.get(f.key);if(!object)return json({error:'Photo not found.'},404);return new Response(object.body,{headers:{'content-type':f.type,'cache-control':'private, no-store','x-content-type-options':'nosniff','content-disposition':'inline'}})}
   if(request.method==='GET'){const {tokenHash,attachments,...visible}=record;return json({...visible,photos:attachments.map(({name,type,size})=>({name,type,size}))})}
   if(request.method==='PATCH'){
-   if(!owner(request,env)||!sameOrigin(request))return json({error:'Store owner access required.'},403);const body=await request.json();if(!['awaiting_review','quote_sent','approved','in_production','completed','closed'].includes(body.status))return json({error:'Invalid status.'},400);
+   if(!await owner(request,env)||!sameOrigin(request))return json({error:'Store owner access required.'},403);const body=await request.json();if(!['awaiting_review','quote_sent','approved','in_production','completed','closed'].includes(body.status))return json({error:'Invalid status.'},400);
    const paymentUrl=text(body.paymentUrl,2000);if(paymentUrl){let parsed;try{parsed=new URL(paymentUrl)}catch{return json({error:'Enter a valid HTTPS payment link.'},400)}if(parsed.protocol!=='https:')return json({error:'Payment links must use HTTPS.'},400)}
    await env.BUCKET.put('requests/'+record.id+'.json',JSON.stringify({...record,status:body.status,reply:text(body.reply,4000),paymentUrl,updatedAt:new Date().toISOString()}));return json({saved:true})
   }

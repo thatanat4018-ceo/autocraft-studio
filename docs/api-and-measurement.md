@@ -25,7 +25,7 @@ Order multipart fields: orderId, items (JSON array: modelId, variant=keychain/so
 
 ## Owner-only endpoints (original Sites origin)
 
-The owner signs in through the original trusted Sites authentication at `/admin`. The Vercel bridge never forwards owner identity and does not proxy admin mutations. Do not send a client-provided owner email header on another host.
+The owner signs in at `/admin` using the dedicated studio username/password or the original trusted Sites owner authentication. Studio credentials are separate from customer accounts, including customer signups using the owner email. Password login uses a salted PBKDF2-SHA256 verifier in runtime secrets, an eight-hour HttpOnly/Secure/SameSite=Strict cookie and a revocable server-side session. Login is limited by IP and global window; all mutations require same-origin. Rotating `STUDIO_ADMIN_PASSWORD_HASH` revokes existing password sessions. The Vercel bridge never forwards owner identity and does not proxy admin mutations. Do not send a client-provided owner email header on another host.
 
 - GET `/api/admin/orders`
 - PATCH `/api/admin/orders/:id`: status, customer-facing reply, final total, HTTPS payment link, verified payment reference, carrier and tracking. Design and final-quote approval are required before payment verification; fulfilment requires verified payment.
@@ -49,3 +49,11 @@ GA4, Meta Pixel and Clarity are not configured: no measurement IDs, external acc
 7. Set ready-for-pickup and agree a MUIC appointment, or add carrier/tracking and mark shipped.
 
 No automated payment gateway, payment webhook, email/LINE messaging, refund automation, or verified-email recovery is connected. Do not manufacture demo or QA orders.
+
+### Studio login API
+
+- `GET /api/admin/auth/me`: authentication state, access method and password-login availability; never returns credentials.
+- `POST /api/admin/auth/login`: `{username,password}`; sets the isolated studio cookie on success.
+- `POST /api/admin/auth/logout`: revokes the current password session and expires its cookie.
+- Runtime configuration: `STUDIO_ADMIN_USERNAME`, secret `STUDIO_ADMIN_PASSWORD_HASH` in `pbkdf2-sha256$100000$<64-hex-salt>$<64-hex-derived-key>` format. Configure through Sites environment tools and deploy; never commit the password or verifier. Preserve `STUDIO_OWNER_EMAIL` for owner fallback.
+- Admin operations remain available on the native Sites host. The Vercel customer bridge does not proxy admin APIs.

@@ -4,6 +4,7 @@ import {readFile,mkdir,writeFile,rm} from 'node:fs/promises';
 await rm('dist',{recursive:true,force:true});
 await build({root:process.cwd(),build:{outDir:'dist/client',emptyOutDir:true},server:{host:'127.0.0.1',port:4173,strictPort:true}});
 await mkdir('dist/server',{recursive:true});
+const admin=await readFile('worker/admin-auth.js','utf8');
 const commerce=await readFile('worker/commerce.js','utf8'),catalog=await readFile('public/catalog/car-models.json','utf8');
 const html=await readFile('dist/client/index.html','utf8'),worker=await readFile('worker/index.js','utf8');
-await writeFile('dist/server/index.js','const INDEX_HTML='+JSON.stringify(html)+';\nconst COMMERCE_CATALOG='+catalog+';\nconst CVARIANTS='+JSON.stringify(VARIANTS)+';\n'+commerce.replace('export async function commerceRoute','async function commerceRoute')+'\n'+worker.replace("import {commerceRoute} from './commerce.js';\n",''));
+await writeFile('dist/server/index.js','const INDEX_HTML='+JSON.stringify(html)+';\nconst COMMERCE_CATALOG='+catalog+';\nconst CVARIANTS='+JSON.stringify(VARIANTS)+';\n'+admin.replaceAll('export async function ','async function ')+'\n'+commerce.replace("import {hasStudioAccess} from './admin-auth.js';\n",'').replace('export async function commerceRoute','async function commerceRoute')+'\n'+worker.replace("import {commerceRoute} from './commerce.js';\n",'').replace("import {hasStudioAccess,studioAuthRoute} from './admin-auth.js';\n",''));
