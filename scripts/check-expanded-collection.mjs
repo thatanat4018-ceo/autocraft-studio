@@ -35,7 +35,7 @@ for(const m of outlined){
   else {assert.match(source.src,/\.(webp|png|jpe?g)$/);assert.ok(bytes.length>5000,'Photographic previews must contain image data');if(source.src.endsWith('.webp')){assert.equal(bytes.toString('ascii',0,4),'RIFF');assert.equal(bytes.toString('ascii',8,12),'WEBP')}}
   photos++;
  }
- const raw=await readFile('public'+modelPhotos(m,'wall','outline')[0].src,'utf8');const d=raw.match(/d="([MQ][^"]+)"/)?.[1];assert.ok(d);hashes.add(createHash('sha256').update(d).digest('hex'));
+ const outlinePath=modelPhotos(m,'wall','outline')[0].src;const raw=await readFile('public'+outlinePath);if(outlinePath.endsWith('.svg')){const d=raw.toString('utf8').match(/d="([MQ][^"]+)"/)?.[1];assert.ok(d);hashes.add(createHash('sha256').update(d).digest('hex'));}else{assert.ok(m.outlineImageProvenance?.modelSpecific,'Raster outlines require model-specific generation provenance');assert.match(outlinePath,/\.webp$/);hashes.add(createHash('sha256').update(raw).digest('hex'));}
 }
 assert.ok(hashes.size>=110,'Do not relabel one silhouette as many models');
 assert.match(sceneBackground(modelPhotos(outlined[0],'wall')[1].src),/outline-room-light.jpg/);

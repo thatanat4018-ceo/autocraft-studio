@@ -15,3 +15,9 @@ Optimized project images live in `public/assets/keychain-photos/` and `public/as
 Model naming has been audited against the existing outline references for ambiguous entries including Corvette C3 1982, Civic EG hatchback, Mazda 3 hatchback, BRZ ZD8, 240SX S13 fastback and modern Alpine A110. Road cars with F1 in their names are excluded from the Formula One filter. Duplicate generic F1 listings remain in the source directory for compatibility but point to a model-specific listing and are hidden from the prepared collection.
 
 Generated raster previews are not machine cutting instructions. The design approval stage remains necessary to confirm the actual cutting/engraving paths, material and dimensions.
+
+The release review compares all three previews per car, including roof configuration, door count and major generation features. Corrections use a versioned image filename so an older browser cache cannot retain an incorrect preview. `scripts/install-generated-photo.py` only compresses actual ImageGen output; it never constructs vehicle geometry.
+
+Run `node scripts/export-product-photo-reviews.mjs` after local visual review, then `node scripts/check-product-photos.mjs --require-complete` before publishing the completed photographic collection. Review evidence uses SHA-256 file hashes, so it remains valid after a Git checkout while changed photographs require a new review. The local review server is a development tool and must never be deployed as a customer or admin API.
+
+The former generic-wheel keychain generator and unreferenced legacy keychain/solid previews are retired outside the public application. Preserve the black outline files still referenced by the catalog.
