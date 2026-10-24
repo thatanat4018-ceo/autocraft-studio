@@ -3,7 +3,7 @@ export const config={api:{bodyParser:false}};
 export default async function handler(req,res){
  const {pathname:path,search}=new URL(req.url,'https://local.invalid');
  const get=req.method==='GET',post=req.method==='POST';
- const allowed=path==='/api/requests'&&post||/^\/api\/requests\/[a-f0-9-]{36}(?:\/(?:photos|designs)\/\d+)?$/.test(path)&&get||path==='/api/health'&&get||/^\/api\/auth\/(signup|login|logout|recover)$/.test(path)&&post||path==='/api/auth/me'&&get||path==='/api/orders'&&(get||post)||/^\/api\/orders\/[a-f0-9-]{36}(?:\/(?:photos|designs)\/\d+)?$/.test(path)&&get||/^\/api\/orders\/[a-f0-9-]{36}\/(approve|revision|accept-quote)$/.test(path)&&post||path==='/api/events'&&post;
+ const allowed=path==='/api/requests'&&post||/^\/api\/requests\/[a-f0-9-]{36}(?:\/(?:photos|designs|slips)\/\d+)?$/.test(path)&&get||path==='/api/health'&&get||/^\/api\/auth\/(signup|login|logout|recover)$/.test(path)&&post||path==='/api/auth/me'&&get||path==='/api/orders'&&(get||post)||/^\/api\/orders\/[a-f0-9-]{36}(?:\/(?:photos|designs|slips)\/\d+)?$/.test(path)&&get||/^\/api\/orders\/[a-f0-9-]{36}\/(approve|revision|accept-quote|slips)$/.test(path)&&post||path==='/api/events'&&post;
  if(!allowed){res.status(404).json({error:'Not found.'});return;}
  if(post){const origin=req.headers.origin,host=req.headers.host;if(!origin||origin!=='https://'+host&&origin!=='http://'+host){res.status(403).json({error:'Please submit from our website.'});return;}}
  const headers={'origin':UPSTREAM};
