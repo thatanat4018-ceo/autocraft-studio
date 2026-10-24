@@ -14,7 +14,9 @@ export default async function handler(req,res){
   res.statusCode=upstream.status;
   res.setHeader('cache-control','private, no-store');res.setHeader('x-content-type-options','nosniff');
   res.setHeader('content-type',upstream.headers.get('content-type')||'application/json');
-  const cookie=upstream.headers.get('set-cookie');if(cookie)res.setHeader('set-cookie',cookie);
+  // Forward only the customer session; host/CDN cookies belong to the upstream domain.
+  const cookies=(upstream.headers.getSetCookie?.()||[upstream.headers.get('set-cookie')||'']).flatMap(v=>v.split(/,(?=\s*[A-Za-z0-9_!-]+=[^;]*)/));
+  const sessionCookie=cookies.map(v=>v.trim()).find(v=>v.startsWith('ac_session='));if(sessionCookie)res.setHeader('set-cookie',sessionCookie);
   const {Readable}=await import('node:stream');Readable.fromWeb(upstream.body).pipe(res);
  }catch{res.status(503).json({error:'Unable to confirm receipt. Please retry; your details have not been cleared.'});}
 }
