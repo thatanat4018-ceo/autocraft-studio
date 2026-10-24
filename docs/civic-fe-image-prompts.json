@@ -1,0 +1,26 @@
+{
+  "tool": "Built-in image_gen",
+  "date": "2026-10-24",
+  "referenceSources": [
+    "https://www.honda.co.th/civic",
+    "https://www.carlist.my/news/2022-honda-civic-fe-launched-3-variants-available-from-rm126k-86662/86662/"
+  ],
+  "prompts": [
+    [
+      "keychain",
+      "Use case: product-mockup. Square premium photorealistic laser-cut MDF product photograph. Reference images show the REAL Honda CIVIC FE 11th-generation Thai four-door sedan, side profile and official RS front. Reproduce this exact car's geometry in wood: long low straight hood, slim horizontal headlights, straight beltline, clean side panels, four doors, small triangular rear quarter window, long wheelbase, separate sedan trunk with tiny lip, slim angular taillights. NOT the previous FC/FK Civic, NOT hatchback, NOT Type R, no boomerang lights, no oversized wing or aggressive fake creases. No colored paint or neon. Natural pale brown MDF with burned dark engraved lines and dark 3mm laser-cut edges. No text/caption/watermark. Entire product with margin. A single 6cm FULL-CAR solid-backed wooden keychain in exact SIDE PROFILE facing right on warm walnut workbench; car has both complete round tires and detailed proportional RS multi-spoke wheels engraved into the solid wood, NOT open wheel arch cutouts. Car occupies 75% width. Robust small wooden eyelet above rear trunk with realistic silver chain and split ring above to right. Fine MDF texture, tactile real thickness, high-end automotive workshop photography, softly blurred dark tool wall beyond. No other products."
+    ],
+    [
+      "solid",
+      "Use case: product-mockup. Square premium photorealistic laser-cut MDF product photograph. Reference images show the REAL Honda CIVIC FE 11th-generation Thai four-door sedan, side profile and official RS front. Reproduce this exact car's geometry in wood: long low straight hood, slim horizontal headlights, straight beltline, clean side panels, four doors, small triangular rear quarter window, long wheelbase, separate sedan trunk with tiny lip, slim angular taillights. NOT the previous FC/FK Civic, NOT hatchback, NOT Type R, no boomerang lights, no oversized wing or aggressive fake creases. No colored paint or neon. Natural pale brown MDF with burned dark engraved lines and dark 3mm laser-cut edges. No text/caption/watermark. Entire product with margin. A single 30cm FULL SOLID WOOD wall-art of entire car in exact SIDE PROFILE facing right, both complete round wheels and their RS multi-spoke rims engraved within solid wood. Mounted on charcoal grey textured wall above enthusiast's wood/black-metal workbench; small-scale 30cm decor, not giant mural. Fine dark etched windows, door seams, headlights and body lines. Car centered about70% width. Dark tasteful garage mood with gentle warm side light, small blurred wrench at lower corner for scale. No ring, no chain."
+    ],
+    [
+      "outline",
+      "Use case: product-mockup. Square premium photorealistic laser-cut MDF product photograph. Reference images show the REAL Honda CIVIC FE 11th-generation Thai four-door sedan, side profile and official RS front. Reproduce this exact car's geometry in wood: long low straight hood, slim horizontal headlights, straight beltline, clean side panels, four doors, small triangular rear quarter window, long wheelbase, separate sedan trunk with tiny lip, slim angular taillights. NOT the previous FC/FK Civic, NOT hatchback, NOT Type R, no boomerang lights, no oversized wing or aggressive fake creases. No colored paint or neon. Natural pale brown MDF with burned dark engraved lines and dark 3mm laser-cut edges. No text/caption/watermark. Entire product with margin. A single BLACK MDF OPEN-LINE wall sculpture, 30cm long, exact side profile facing right. Only elegant thin connected physical black wooden rails forming roof, long hood, trunk, windows, doors and body contours. Wall visible through all inner negative spaces. Two large EMPTY semicircular wheel arch openings at bottom, NO wheels/tires, NO solid wood backing. Smooth tidy line design, not scribbles. Mounted on warm light-grey concrete automotive studio wall, subtle realistic shadows reveal 3mm cut thickness. Car centered 75% width. Black cabinet top and small blurred model car at far bottom corner establish actual30cm scale. No chain, no ring, no printed art."
+    ]
+  ],
+  "galleryEdits": {
+    "outlineDark": "Preserve exact FE outline sculpture; change only background to charcoal garage wall, warm white workshop light and tool cabinet. No neon.",
+    "outlinePlain": "Preserve exact FE outline sculpture; change only background to warm off-white studio wall, remove all props, retain realistic shadow and MDF thickness."
+  }
+}

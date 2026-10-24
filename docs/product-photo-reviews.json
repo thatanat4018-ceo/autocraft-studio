@@ -425,9 +425,11 @@
     "reviewedAt": "2026-10-21T18:31:13.076Z"
   },
   "model-7646231888071": {
-    "keychain": "e230a1128437ff71bc501493cdac4414883347060c5c1a14689e7124318936d0",
-    "solid": "8e6ee3afad5d1933f7c46dfc01743a719741ddb1c32c2d3c2cd991a19b8daf8d",
-    "reviewedAt": "2026-10-21T18:31:13.076Z"
+    "keychain": "664aa5f8cfd292f2a82164d49d770155b5021074564918d4fb247cf4dc08971a",
+    "solid": "7281d3961c4d7610899fca34d340abb5f432057e257f997cf8007a27d8921a34",
+    "outline": "87f9ea089afdb0679cebdfc83cfbf7627cb8648fd8a62043ac05f5e48946d9b0",
+    "reviewedAt": "2026-10-24",
+    "notes": "Visually compared with actual 11th-gen FE sedan side profile and official Honda Thai RS exterior. Corrected former FC/FK-like shape; reviewed all three outline scenes, solid MDF and full-wheel keychain."
   },
   "model-7348453474503": {
     "keychain": "6290edf99e2195e42928e9ff7a19d9fc71de2e6b30e13d0a7b95fe71c3973ea3",
